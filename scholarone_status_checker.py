@@ -7,7 +7,7 @@ from splinter import Browser
 
 SENDMAIL = '/usr/bin/msmtp'
 
-wait_delay = 2
+wait_delay = 1
 with open('manuscript_present_status.txt', 'r') as myfile:
     previous_manuscript_status=myfile.read().replace('\n', '')
 
@@ -19,7 +19,7 @@ def get_pass():
 
 rsc_password_plaintext = get_pass()
 
-b = Browser('chrome')
+b = Browser('chrome', headless=True)
 time.sleep(wait_delay)
 b.visit('https://mc.manuscriptcentral.com/ee/')
 time.sleep(wait_delay)
@@ -32,8 +32,8 @@ time.sleep(wait_delay)
 b.click_link_by_partial_href("AUTHOR")
 time.sleep(wait_delay)
 html_obj = b.html
-#  soup = BeautifulSoup(html_obj,"lxml")
-soup = BeautifulSoup(html_obj)
+soup = BeautifulSoup(html_obj,"lxml")
+#  soup = BeautifulSoup(html_obj)
 table = soup.find("table", attrs={"class":"table table-striped rt cf"})
 row = table.tbody.findAll('tr')[1]
 first_column_html = str(row.findAll('td')[1].contents[0])
@@ -49,8 +49,8 @@ if current_manuscript_status == previous_manuscript_status:
 else:
     print "There has been a new status change.....Sending updated paper status through email ... "
     p = os.popen("%s -t" % SENDMAIL, "w")
-    p.write("To: krishnak@vt.edu\n")
-    p.write("Subject: Status Update: Layer Optimisation Manuscript RSC EES\n")
+    p.write("bcc: krishnak@vt.edu\n")
+    p.write("Subject: Status update from Krishna's automation tool: Layer Optimisation Manuscript RSC EES\n")
     p.write("\n") # blank line separating headers from body
     p.write("Current status of Manuscript is : " + current_manuscript_status + "\n")
     sts = p.close()
@@ -59,3 +59,5 @@ else:
     text_file = open("manuscript_present_status.txt", "w")
     text_file.write(current_manuscript_status)
     text_file.close()
+    time.sleep(5)
+    os.system('cls' if os.name == 'nt' else 'clear')
