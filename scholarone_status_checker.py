@@ -1,11 +1,13 @@
-from subprocess import check_output
-from bs4 import BeautifulSoup
-from splinter import Browser
-SENDMAIL = '/usr/bin/msmtp'
 import os
 import time
+from subprocess import check_output
 
-wait_delay = 4
+from bs4 import BeautifulSoup
+from splinter import Browser
+
+SENDMAIL = '/usr/bin/msmtp'
+
+wait_delay = 2
 with open('manuscript_present_status.txt', 'r') as myfile:
     previous_manuscript_status=myfile.read().replace('\n', '')
 
@@ -30,7 +32,8 @@ time.sleep(wait_delay)
 b.click_link_by_partial_href("AUTHOR")
 time.sleep(wait_delay)
 html_obj = b.html
-soup = BeautifulSoup(html_obj,"lxml")
+#  soup = BeautifulSoup(html_obj,"lxml")
+soup = BeautifulSoup(html_obj)
 table = soup.find("table", attrs={"class":"table table-striped rt cf"})
 row = table.tbody.findAll('tr')[1]
 first_column_html = str(row.findAll('td')[1].contents[0])
